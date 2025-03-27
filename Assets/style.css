@@ -1,0 +1,111 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  background: linear-gradient(to right, purple 0%, pink 150%);
+  text-align: center;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.Calc {
+  background: linear-gradient(
+    to top,
+    whitesmoke 0%,
+    rgba(255, 255, 255, 0.67) 200%
+  );
+  border-radius: 35px;
+  max-width: 400px;
+  min-width: 200px;
+  margin: 0 30px;
+}
+
+.Output {
+  margin-top: 40px;
+}
+
+.Output input {
+  text-align: right;
+  width: 80%;
+  font-size: 3em;
+  padding: 5px;
+  border-radius: 25px;
+  border: 0;
+  box-shadow: rgb(150, 150, 150) 0 0 5px 1px;
+}
+
+.Output input:focus {
+  border: 0;
+  outline: none;
+}
+
+.CalcButtons {
+  margin-top: 30px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.CalcRows {
+  margin: 20px 0;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.CalcRows div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.325) 0%,
+    rgba(0, 0, 0, 0) 150%
+  );
+
+  /* that the buttons don't accidentally get pressed */
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+
+  /* box-shadow: rgb(150, 150, 150) 0 0 5px 1px; */
+}
+
+.CalcRows div:active {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.325) 0%,
+    rgba(0, 0, 0, 0) 500%
+  );
+  box-shadow: rgb(150, 150, 150) 0 0 5px 1px;
+}
+
+.CalcRows div:hover {
+  cursor: pointer;
+}
+
+.Equals {
+  width: 135px !important;
+  border-radius: 15px !important;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 0, 0, 0.325) 0%,
+    rgba(255, 0, 191, 0.514) 100%
+  ) !important;
+  background-color: rgba(255, 56, 205, 0.514) !important;
+}

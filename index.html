@@ -17,33 +17,33 @@
         </div>
         <div class="CalcButtons">
           <section class="CalcRows">
-            <div>clr</div>
-            <div>DEL</div>
-            <div>%</div>
-            <div>/</div>
+            <div onclick="ButtonPress('clr')">clr</div>
+            <div onclick="ButtonPress('del')">DEL</div>
+            <div onclick="ButtonPress('%')">%</div>
+            <div onclick="ButtonPress('/')">/</div>
           </section>
           <section class="CalcRows">
-            <div>7</div>
-            <div>8</div>
-            <div>9</div>
-            <div>*</div>
+            <div onclick="NumberPress('7')">7</div>
+            <div onclick="NumberPress('8')">8</div>
+            <div onclick="NumberPress('9')">9</div>
+            <div onclick="ButtonPress('*')">*</div>
           </section>
           <section class="CalcRows">
-            <div>4</div>
-            <div>5</div>
-            <div>6</div>
-            <div>-</div>
+            <div onclick="NumberPress('4')">4</div>
+            <div onclick="NumberPress('5')">5</div>
+            <div onclick="NumberPress('6')">6</div>
+            <div onclick="ButtonPress('-')">-</div>
           </section>
           <section class="CalcRows">
-            <div>1</div>
-            <div>2</div>
-            <div>3</div>
-            <div>+</div>
+            <div onclick="NumberPress('1')">1</div>
+            <div onclick="NumberPress('2')">2</div>
+            <div onclick="NumberPress('3')">3</div>
+            <div onclick="ButtonPress('+')">+</div>
           </section>
           <section class="CalcRows">
-            <div>.</div>
-            <div>0</div>
-            <div class="Equals">=</div>
+            <div onclick="ButtonPress('.')">.</div>
+            <div onclick="NumberPress('0')">0</div>
+            <div class="Equals" onclick="Enter()">=</div>
           </section>
         </div>
       </div>

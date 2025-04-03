@@ -103,7 +103,7 @@ main {
 }
 
 .Equals {
-  width: 135px !important;
+  width: 100% !important;
   border-radius: 15px !important;
   background: linear-gradient(
     to bottom,
@@ -111,4 +111,5 @@ main {
     rgba(255, 0, 191, 0.514) 100%
   ) !important;
   background-color: rgba(255, 56, 205, 0.514) !important;
+  margin: 0 15px;
 }

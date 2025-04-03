@@ -1,9 +1,8 @@
 let NumberValue = document.getElementById("Number");
 
 let CurrentInput = "";
-let Inputs = [];
-let Operations = [];
 let FullEquation = "";
+let ParenthesesCount = 0;
 
 function UpdateDisplay() {
   // Show the full equation and current input
@@ -26,91 +25,124 @@ function ButtonPress(operator) {
   if (operator === "clr") {
     // Clear everything
     CurrentInput = "";
-    Inputs = [];
-    Operations = [];
     FullEquation = "";
+    ParenthesesCount = 0;
     UpdateDisplay();
   } else if (operator === "del") {
     // Delete last character of current input
-    CurrentInput = CurrentInput.slice(0, -1);
+    if (CurrentInput !== "") {
+      // If deleting a closing parenthesis, update counter
+      if (CurrentInput.slice(-1) === ")") {
+        ParenthesesCount++;
+      } else if (CurrentInput.slice(-1) === "(") {
+        ParenthesesCount--;
+      }
+      CurrentInput = CurrentInput.slice(0, -1);
+    } else if (FullEquation !== "") {
+      // If deleting from the full equation
+      if (FullEquation.slice(-1) === ")") {
+        ParenthesesCount++;
+      } else if (FullEquation.slice(-1) === "(") {
+        ParenthesesCount--;
+      }
+      FullEquation = FullEquation.slice(0, -1);
+    }
     UpdateDisplay();
   } else if (operator === ".") {
-    // Add decimal point if not already present
-    if (!CurrentInput.includes(".")) {
+    // Add decimal point if not already present in current input
+    if (CurrentInput !== "" && !CurrentInput.includes(".")) {
       CurrentInput += ".";
       UpdateDisplay();
     }
+  } else if (operator === "(") {
+    // Handle opening parenthesis
+    if (CurrentInput === "" || isNaN(CurrentInput.slice(-1))) {
+      // Can add opening parenthesis only at the start or after an operator
+      CurrentInput += "(";
+      ParenthesesCount++;
+      UpdateDisplay();
+    } else {
+      // If there's a number, first add the multiply operator
+      FullEquation += CurrentInput + " * (";
+      CurrentInput = "";
+      ParenthesesCount++;
+      UpdateDisplay();
+    }
+  } else if (operator === ")") {
+    // Handle closing parenthesis - only if there's an open one
+    if (ParenthesesCount > 0 && CurrentInput !== "") {
+      CurrentInput += ")";
+      ParenthesesCount--;
+      UpdateDisplay();
+    } else if (ParenthesesCount > 0) {
+      FullEquation += ")";
+      ParenthesesCount--;
+      UpdateDisplay();
+    }
   } else {
-    // Handle operators
+    // Handle other operators (+, -, *, /, %)
     if (CurrentInput !== "") {
-      // Save current input and operator
-      Inputs.push(parseFloat(CurrentInput));
-      Operations.push(operator);
-
-      // Update the full equation display
+      // Add the current input and operator to the full equation
       FullEquation += CurrentInput + " " + operator + " ";
       CurrentInput = "";
       UpdateDisplay();
-    } else if (Operations.length > 0) {
+    } else if (FullEquation !== "") {
       // Change the last operator if no new input
-      Operations[Operations.length - 1] = operator;
-      FullEquation = FullEquation.slice(0, -3) + operator + " ";
+      let lastChar = FullEquation.trim().slice(-1);
+      if (["+", "-", "*", "/", "%"].includes(lastChar)) {
+        FullEquation = FullEquation.slice(0, -2) + operator + " ";
+      } else if (lastChar === ")") {
+        // If last character is closing parenthesis, add operator
+        FullEquation += " " + operator + " ";
+      }
       UpdateDisplay();
     }
   }
 }
 
 function Enter() {
-  if (CurrentInput !== "" && Inputs.length > 0) {
-    // Add the final input
-    Inputs.push(parseFloat(CurrentInput));
+  if (FullEquation !== "" || CurrentInput !== "") {
+    // Close any remaining open parentheses
+    let expression = FullEquation + CurrentInput;
+    for (let i = 0; i < ParenthesesCount; i++) {
+      expression += ")";
+    }
 
-    // Calculate the result
-    let result = Inputs[0];
-    for (let i = 0; i < Operations.length; i++) {
-      const nextNum = Inputs[i + 1];
-      switch (Operations[i]) {
-        case "+":
-          result += nextNum;
-          break;
-        case "-":
-          result -= nextNum;
-          break;
-        case "*":
-          result *= nextNum;
-          break;
-        case "/":
-          result = nextNum !== 0 ? result / nextNum : "Error";
-          break;
-        case "%":
-          result = result % nextNum;
-          break;
+    try {
+      // Use Function constructor to safely evaluate the expression
+      // Replace % with modulo operation
+      expression = expression.replace(/%/g, "%");
+
+      // Create a safer evaluation environment
+      const calculate = new Function(
+        "return " + expression.replace(/%/g, " % ")
+      );
+      let result = calculate();
+
+      // Format the result
+      if (isNaN(result) || !isFinite(result)) {
+        result = "Error";
+      } else {
+        result = parseFloat(result.toFixed(10)); // Remove trailing zeros
+        result = result.toString().slice(0, 12); // Limit length
       }
 
-      // Stop calculation if error occurred
-      if (result === "Error") break;
+      // Save the full expression for display
+      const fullCalculation = expression;
+
+      // Reset for new calculation
+      CurrentInput = result.toString();
+      FullEquation = "";
+      ParenthesesCount = 0;
+
+      // Show result with calculation history
+      NumberValue.value = fullCalculation + " = " + CurrentInput;
+    } catch (error) {
+      NumberValue.value = "Error";
+      CurrentInput = "";
+      FullEquation = "";
+      ParenthesesCount = 0;
     }
-
-    // Format and display the result
-    if (result !== "Error") {
-      result = parseFloat(result.toFixed(10)); // Remove trailing zeros
-      result = result.toString().slice(0, 12); // Limit length
-    }
-
-    // Display the full equation with result
-    const fullCalculation = FullEquation + CurrentInput;
-
-    // Reset for new calculation but keep history
-    CurrentInput = result.toString();
-    Inputs = [];
-    Operations = [];
-    FullEquation = "";
-
-    // Show result with calculation history
-    NumberValue.value = fullCalculation + " = " + CurrentInput;
-  } else if (CurrentInput !== "") {
-    // If only one number is entered, keep it as is
-    UpdateDisplay();
   }
 }
 

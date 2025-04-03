@@ -1,78 +1,117 @@
 let NumberValue = document.getElementById("Number");
 
 let CurrentInput = "";
-let PreviousInput = "";
-let CurrentOperation = null;
+let Inputs = [];
+let Operations = [];
+let FullEquation = "";
 
-function UpdateNumber() {
-  NumberValue.value = CurrentInput + " " || "0 ";
+function UpdateDisplay() {
+  // Show the full equation and current input
+  if (FullEquation || CurrentInput) {
+    NumberValue.value = FullEquation + CurrentInput;
+  } else {
+    NumberValue.value = "0";
+  }
 }
 
 function NumberPress(number) {
   if (CurrentInput.length < 12) {
-    // Beperking op lengte van invoer
+    // Limit input length
     CurrentInput += number;
-    UpdateNumber();
+    UpdateDisplay();
   }
 }
 
 function ButtonPress(operator) {
   if (operator === "clr") {
+    // Clear everything
     CurrentInput = "";
-    PreviousInput = "";
-    CurrentOperation = null;
-    UpdateNumber();
+    Inputs = [];
+    Operations = [];
+    FullEquation = "";
+    UpdateDisplay();
   } else if (operator === "del") {
+    // Delete last character of current input
     CurrentInput = CurrentInput.slice(0, -1);
-    UpdateNumber();
+    UpdateDisplay();
   } else if (operator === ".") {
+    // Add decimal point if not already present
     if (!CurrentInput.includes(".")) {
       CurrentInput += ".";
-      UpdateNumber();
+      UpdateDisplay();
     }
   } else {
+    // Handle operators
     if (CurrentInput !== "") {
-      if (PreviousInput !== "") {
-        Enter();
-      }
-      PreviousInput = CurrentInput;
+      // Save current input and operator
+      Inputs.push(parseFloat(CurrentInput));
+      Operations.push(operator);
+
+      // Update the full equation display
+      FullEquation += CurrentInput + " " + operator + " ";
       CurrentInput = "";
-      CurrentOperation = operator;
+      UpdateDisplay();
+    } else if (Operations.length > 0) {
+      // Change the last operator if no new input
+      Operations[Operations.length - 1] = operator;
+      FullEquation = FullEquation.slice(0, -3) + operator + " ";
+      UpdateDisplay();
     }
   }
 }
 
 function Enter() {
-  if (PreviousInput !== "" && CurrentInput !== "") {
-    let result;
-    let prev = parseFloat(PreviousInput);
-    let curr = parseFloat(CurrentInput);
+  if (CurrentInput !== "" && Inputs.length > 0) {
+    // Add the final input
+    Inputs.push(parseFloat(CurrentInput));
 
-    switch (CurrentOperation) {
-      case "+":
-        result = prev + curr;
-        break;
-      case "-":
-        result = prev - curr;
-        break;
-      case "*":
-        result = prev * curr;
-        break;
-      case "/":
-        result = curr !== 0 ? prev / curr : "Error";
-        break;
-      case "%":
-        result = prev % curr;
-        break;
-      default:
-        return;
+    // Calculate the result
+    let result = Inputs[0];
+    for (let i = 0; i < Operations.length; i++) {
+      const nextNum = Inputs[i + 1];
+      switch (Operations[i]) {
+        case "+":
+          result += nextNum;
+          break;
+        case "-":
+          result -= nextNum;
+          break;
+        case "*":
+          result *= nextNum;
+          break;
+        case "/":
+          result = nextNum !== 0 ? result / nextNum : "Error";
+          break;
+        case "%":
+          result = result % nextNum;
+          break;
+      }
+
+      // Stop calculation if error occurred
+      if (result === "Error") break;
     }
 
-    CurrentInput = result.toString().slice(0, 12); // Beperking op lengte
-    PreviousInput = "";
-    CurrentOperation = null;
-    UpdateNumber();
+    // Format and display the result
+    if (result !== "Error") {
+      result = parseFloat(result.toFixed(10)); // Remove trailing zeros
+      result = result.toString().slice(0, 12); // Limit length
+    }
+
+    // Display the full equation with result
+    const fullCalculation = FullEquation + CurrentInput;
+
+    // Reset for new calculation but keep history
+    CurrentInput = result.toString();
+    Inputs = [];
+    Operations = [];
+    FullEquation = "";
+
+    // Show result with calculation history
+    NumberValue.value = fullCalculation + " = " + CurrentInput;
+  } else if (CurrentInput !== "") {
+    // If only one number is entered, keep it as is
+    UpdateDisplay();
   }
 }
 
-UpdateNumber();
+UpdateDisplay();

@@ -41,11 +41,14 @@ main {
 .Output input {
   text-align: right;
   width: 80%;
-  font-size: 3em;
-  padding: 5px;
+  font-size: 1.8em;
+  padding: 10px;
   border-radius: 25px;
   border: 0;
   box-shadow: rgb(150, 150, 150) 0 0 5px 1px;
+  overflow-x: auto;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .Output input:focus {
